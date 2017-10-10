@@ -1,6 +1,6 @@
 {
   "name": "shelfdb",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Node.JS custom database and abstract class library",
   "main": "index.js",
   "scripts": {

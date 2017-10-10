@@ -193,14 +193,19 @@ Database = (function() {
 
   Database.prototype.parsePath = function(path, separator) {
     if ((typeof path) === "string") {
-      path = path.split(separator);
+      path = path.match(new RegExp("(?:\\\\.|[^\\" + separator[0] + "])+", 'g')).map(function(x) {
+        return x.replace("\\.", ".");
+      });
     }
     return path;
   };
 
-  Database.prototype.put = function(path, value, obj) {
+  Database.prototype.put = function(path, value, separator, obj) {
     var first;
-    path = this.parsePath(path, '.');
+    if (separator == null) {
+      separator = '.';
+    }
+    path = this.parsePath(path, separator);
     first = false;
     if (obj == null) {
       this.load();
@@ -211,14 +216,16 @@ Database = (function() {
       if (obj[path[0]] == null) {
         obj[path[0]] = {};
       }
-      obj[path[0]] = this.put(path.slice(1), value, obj[path[0]]);
+      obj[path[0]] = this.put(path.slice(1), value, separator, obj[path[0]]);
     } else {
       obj[path[0]] = value;
     }
     if (first) {
       this.data = obj;
       this.save();
-      return path.join(".");
+      return path.map(function(x) {
+        return x.replace(".", "\\.");
+      }).join(".");
     } else {
       return obj;
     }

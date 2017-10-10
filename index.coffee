@@ -143,12 +143,16 @@ class Database
 
     parsePath: (path, separator) ->
         if (typeof path) is "string"
-            path = path.split(separator)
+            path = path
+                .match(new RegExp("(?:\\\\.|[^\\#{separator[0]}])+", 'g'))
+                .map((x) -> x.replace("\\.", "."))
 
         return path
 
-    put: (path, value, obj) =>
-        path = @parsePath(path, '.')
+    put: (path, value, separator, obj) =>
+        if not separator? then separator = '.'
+
+        path = @parsePath(path, separator)
         first = false
 
         if not obj?
@@ -160,7 +164,7 @@ class Database
             if not obj[path[0]]?
                 obj[path[0]] = {}
 
-            obj[path[0]] = @put(path.slice(1), value, obj[path[0]])
+            obj[path[0]] = @put(path.slice(1), value, separator, obj[path[0]])
 
         else
             obj[path[0]] = value
@@ -169,7 +173,7 @@ class Database
             @data = obj
             @save()
 
-            return path.join(".")
+            return path.map((x) -> x.replace(".", "\\.")).join(".")
 
         else
             return obj
