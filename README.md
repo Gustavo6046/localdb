@@ -1,4 +1,4 @@
-# localdb
+# shelfdb
 is a Node.JS database library that allows for JSON and YAML (but you can easily extend the serializer options by implementing the abstract class `DatabaseSerializer` - [see below for abstract classes!](#abstract-classes)).
 
 Its capabilities include serializing most objects, including primitive types, arrays and even objects that are serialized in a custom way (check the class `DBSerializable` for more!)
