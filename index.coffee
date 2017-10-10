@@ -1,3 +1,4 @@
+fs = require('fs')
 YAML = require('js-yaml')
 { abstractClass, isImplementation } = require('./abstraction.js')
 
