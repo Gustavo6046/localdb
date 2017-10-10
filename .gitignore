@@ -65,3 +65,4 @@ compile*.bat
 *.json
 !*.example.yml
 !*.example.yml
+!package*.json

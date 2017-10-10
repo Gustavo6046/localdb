@@ -1,0 +1,30 @@
+{
+  "name": "shelfdb",
+  "version": "0.1.3",
+  "description": "Node.JS custom database and abstract class library",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "precompile": "exit 0",
+    "oncompile": "exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gustavo6046/localdb.git"
+  },
+  "keywords": [
+    "database",
+    "abstract",
+    "abstract_classes",
+    "interface",
+    "interfaces",
+    "sync",
+    "shelf"
+  ],
+  "author": "Gustavo Ramos \"Gustavo6046\" Rehermann",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Gustavo6046/localdb/issues"
+  },
+  "homepage": "https://github.com/Gustavo6046/localdb#readme"
+}
