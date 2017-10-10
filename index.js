@@ -236,6 +236,9 @@ Database = (function() {
 
   Database.prototype.get = function(path, separator) {
     var i, len, o, p;
+    if (separator == null) {
+      separator = '.';
+    }
     this.load();
     path = this.parsePath(path, separator);
     o = this.data;
@@ -251,9 +254,6 @@ Database = (function() {
 
   Database.prototype.append = function(path, value, separator) {
     var o;
-    if (separator == null) {
-      separator = '.';
-    }
     o = this.get(path, separator);
     if (typeof o !== "array") {
       return null;
