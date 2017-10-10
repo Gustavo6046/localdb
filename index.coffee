@@ -174,7 +174,7 @@ class Database
             @data = obj
             @save()
 
-            return path.map((x) -> x.replace(".", "\\.")).join(".")
+            return path.map((x) -> x.split('.').join('\\.')).join(".")
 
         else
             return obj

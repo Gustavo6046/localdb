@@ -226,7 +226,7 @@ Database = (function() {
       this.data = obj;
       this.save();
       return path.map(function(x) {
-        return x.replace(".", "\\.");
+        return x.split('.').join('\\.');
       }).join(".");
     } else {
       return obj;
