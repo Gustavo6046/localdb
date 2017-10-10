@@ -251,6 +251,9 @@ Database = (function() {
 
   Database.prototype.append = function(path, value, separator) {
     var o;
+    if (separator == null) {
+      separator = '.';
+    }
     o = this.get(path, separator);
     if (typeof o !== "array") {
       return null;

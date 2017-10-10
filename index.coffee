@@ -194,6 +194,8 @@ class Database
         return o
 
     append: (path, value, separator) =>
+        if not separator? then separator = '.'
+
         o = @get(path, separator)
 
         if typeof o isnt "array"
