@@ -1,5 +1,5 @@
 # localdb
-is a Node.JS database library that allows for JSON and YAML (but you can easily extend the serializer options by implementing the abstract class `DatabaseSerializer` - [see below for abstract classes!](#Abstract_Classes)).
+is a Node.JS database library that allows for JSON and YAML (but you can easily extend the serializer options by implementing the abstract class `DatabaseSerializer` - [see below for abstract classes!](#abstract-classes)).
 
 Its capabilities include serializing most objects, including primitive types, arrays and even objects that are serialized in a custom way (check the class `DBSerializable` for more!)
 
@@ -94,12 +94,17 @@ Returns an Object containing the data represented by the string.
 Returns a database with the serializer set automatically to the Serializer it is called on. A filename must still be provided.
 
 ## Abstract Classes
+
+Abstract classes are classes that have unimplemented methods and thus for security can't be instantiated; you need to set it to an implemented version of it using its `apply` function. Their main usage is for template code which can serve as the bare bones for future classes that have the same (or similar) concept or usage, but different methodology.
+
+These are based in Java interfaces.
+
 ### Functions
 * `abstractClass(Class other, optional Function onApply(Class s))`
 
 **Function Scope:** global - **Function Return Type:** `AbstractClass`
 
-Returns an abstracted version of this class.
+Returns an abstracted version of this class, which has an `apply(Class other)` static function that returns a version of `other` implementing this class (which is necessary to make it an implementation of this class).
 
 #### Rules for abstract classes:
 * All abstract functions must be `null`, static, and their name must be prefixed by either `F_` for instance functions or `S_` for static ones.
