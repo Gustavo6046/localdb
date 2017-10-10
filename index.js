@@ -80,6 +80,7 @@ Database = (function() {
     var err;
     this.filename = filename1;
     this.serializer = serializer;
+    this.append = bind(this.append, this);
     this.get = bind(this.get, this);
     this.put = bind(this.put, this);
     this.serialize = bind(this.serialize, this);
@@ -233,10 +234,10 @@ Database = (function() {
     }
   };
 
-  Database.prototype.get = function(path) {
+  Database.prototype.get = function(path, separator) {
     var i, len, o, p;
     this.load();
-    path = this.parsePath(path, '.');
+    path = this.parsePath(path, separator);
     o = this.data;
     for (i = 0, len = path.length; i < len; i++) {
       p = path[i];
@@ -246,6 +247,16 @@ Database = (function() {
       o = o[p];
     }
     return o;
+  };
+
+  Database.prototype.append = function(path, value, separator) {
+    var o;
+    o = this.get(path, separator);
+    if (typeof o !== "array") {
+      return null;
+    }
+    o.push(value);
+    return this.put(path, o, separator);
   };
 
   return Database;

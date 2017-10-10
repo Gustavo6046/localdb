@@ -179,10 +179,10 @@ class Database
         else
             return obj
 
-    get: (path) =>
+    get: (path, separator) =>
         @load()
 
-        path = @parsePath(path, '.')
+        path = @parsePath(path, separator)
         o = @data
 
         for p in path
@@ -192,6 +192,16 @@ class Database
             o = o[p]
 
         return o
+
+    append: (path, value, separator) =>
+        o = @get(path, separator)
+
+        if typeof o isnt "array"
+            return null
+
+        o.push(value)
+
+        return @put(path, o, separator)
 
 module.exports = {
     DBSerializable: DBSerializable
