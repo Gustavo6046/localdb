@@ -196,7 +196,7 @@ Database = (function() {
   Database.prototype.parsePath = function(path, separator) {
     if ((typeof path) === "string") {
       path = path.match(new RegExp("(?:\\\\.|[^\\" + separator[0] + "])+", 'g')).map(function(x) {
-        return x.replace("\\.", ".");
+        return x.split("\\.").join(".");
       });
     }
     return path;

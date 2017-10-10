@@ -146,7 +146,7 @@ class Database
         if (typeof path) is "string"
             path = path
                 .match(new RegExp("(?:\\\\.|[^\\#{separator[0]}])+", 'g'))
-                .map((x) -> x.replace("\\.", "."))
+                .map((x) -> x.split("\\.").join("."))
 
         return path
 
