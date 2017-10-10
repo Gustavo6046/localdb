@@ -57,3 +57,11 @@ typings/
 # dotenv environment variables file
 .env
 
+# Project setup
+compile*.bat
+
+# Database files (probably test leftovers)
+*.yml
+*.json
+!*.example.yml
+!*.example.yml

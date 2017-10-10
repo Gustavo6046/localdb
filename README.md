@@ -3,6 +3,58 @@ is a Node.JS database library that allows for JSON and YAML (but you can easily 
 
 Its capabilities include serializing most objects, including primitive types, arrays and even objects that are serialized in a custom way (check the class `DBSerializable` for more!)
 
+An example of its usage:
+
+    $ node
+    > var { YAMLSerializer } = require('./index.js')
+    undefined
+    > YAMLSerializer
+    { [Function: YAMLSerializer] database: [Function] }
+    > var db = YAMLSerializer.database('test.yml')
+    undefined
+    > db.put("test.2.thanks", {"Hello": "World!"})
+    'test.2.thanks'
+    > db.get("test.2.thanks.hello") // Hey, path strings are case-sensitive!
+    null
+    > db.get("test.2.thanks.Hello") // Now it's right. :)
+    'World!'
+    > db.get("test.2.thanks")
+    { Hello: 'World!' }
+
+This chain of commands results in a `test.yml` file with the following contents:
+
+    spec:
+        serialization: null
+        type: object
+        primitive: false
+    obj:
+        test:
+            spec:
+                serialization: null
+                type: object
+                primitive: false
+            obj:
+                '2':
+                    spec:
+                        serialization: null
+                        type: object
+                        primitive: false
+                    obj:
+                        thanks:
+                            spec:
+                                serialization: null
+                                type: object
+                                primitive: false
+                            obj:
+                                Hello:
+                                    spec:
+                                        serialization: null
+                                        type: string
+                                        primitive: true
+                                    obj: World!
+
+In case you don't require advanced specification structures for accurately flexible representations, **please** don't use this! It'll make your file way larger and isn't suitable for large files.
+
 # API
 ## Databases
 
