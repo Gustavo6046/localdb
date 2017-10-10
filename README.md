@@ -6,7 +6,7 @@ Its capabilities include serializing most objects, including primitive types, ar
 An example of its usage:
 
     $ node
-    > var { YAMLSerializer } = require('./index.js')
+    > var { YAMLSerializer } = require('shelfdb')
     undefined
     > YAMLSerializer
     { [Function: YAMLSerializer] database: [Function] }
