@@ -6,7 +6,7 @@ shift
 :loop1
 if "%1"=="" goto after_loop
 if "%RESTVAR%"=="" (
-    set RESTVAR=%RESTVAR% %1
+    set RESTVAR=%1
 ) else (
     set RESTVAR=%RESTVAR% %1
 )
@@ -21,7 +21,7 @@ git add . -A
 git add . -u
 
 call npm run precompile
-echo ^> npm version %VTYPE% -m%RESTVAR% --force
-call npm version %VTYPE% -m%RESTVAR% --force
+echo ^> npm version %VTYPE% -m %RESTVAR% --force
+call npm version %VTYPE% -m %RESTVAR% --force
 call npm run oncompile
 call npm publish
