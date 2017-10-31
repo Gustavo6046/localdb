@@ -276,6 +276,5 @@ module.exports = {
   JSONSerializer: JSONSerializer,
   YAMLSerializer: YAMLSerializer,
   abstractClass: abstractClass,
-  isImplementation: isImplementation,
-  SerializableFunction: SerializableFunction
+  isImplementation: isImplementation
 };

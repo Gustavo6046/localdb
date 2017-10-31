@@ -220,6 +220,4 @@ module.exports = {
     # entry point inheritance
     abstractClass: abstractClass
     isImplementation: isImplementation
-
-    SerializableFunction: SerializableFunction
 }
