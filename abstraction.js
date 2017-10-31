@@ -73,7 +73,9 @@ BadInheritanceError = (function(superClass) {
 
 abstractClass = function(cls, onApply) {
   var AbstractedClass, k, v;
-  AbstractedClass = (function() {
+  AbstractedClass = (function(superClass) {
+    extend(AbstractedClass, superClass);
+
     function AbstractedClass() {
       throw new AbstractClassError('Can\'t instantiate abstract classes!');
     }
@@ -104,7 +106,7 @@ abstractClass = function(cls, onApply) {
 
     return AbstractedClass;
 
-  })();
+  })(cls);
   for (k in AbstractedClass) {
     v = AbstractedClass[k];
     if (v == null) {

@@ -13,7 +13,7 @@ class AbstractClassError extends AbstractionError
 class BadInheritanceError extends AbstractionError
 
 abstractClass = (cls, onApply) ->
-    class AbstractedClass
+    class AbstractedClass extends cls
         constructor: ->
             throw new AbstractClassError('Can\'t instantiate abstract classes!')
 
