@@ -39,6 +39,31 @@ DBSerializable = abstractClass(DBSerializable, (cls) ->
 )
 
 # =======================
+# Additional Serializables
+
+class SerializableFunction extends Function
+    toObject: =>
+        m = /function [a-zA-Z0-9\$_]+\(.+?\) {(.+)}/
+            .match('' + @)
+
+        return {
+            name: @name
+            args: @arguments
+            code: m[1]
+        }
+
+    @fromObject = (o) ->
+        ln = o.args
+        ln.push(o.code)
+
+        res = Function.apply(this, ln)
+
+    @fromFunc = (func) ->
+        return Object.create(SerializableFunction, func)
+
+SerializableFunction = DBSerializable.apply(SerializableFunction)
+
+# =======================
 
 class Database
     constructor: (@filename, @serializer) ->
@@ -198,10 +223,14 @@ class Database
     append: (path, value, separator) =>
         o = @get(path, separator)
 
-        if typeof o isnt "array"
+        if not o?
+            o = [value]
+
+        else if typeof o isnt "array"
             return null
 
-        o.push(value)
+        else
+            o.push(value)
 
         return @put(path, o, separator)
 
@@ -216,4 +245,6 @@ module.exports = {
     # entry point inheritance
     abstractClass: abstractClass
     isImplementation: isImplementation
+
+    SerializableFunction: SerializableFunction
 }
