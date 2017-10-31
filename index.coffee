@@ -70,7 +70,7 @@ class Database
             res.spec.type = "DBSerializable"
             res.spec.serialization = obj.constructor.name
 
-        if typeof obj != 'object'
+        else if typeof obj != 'object'
             if (typeof obj) not in ['string', 'number', 'array', 'boolean']
                 throw new Error("#{obj} must be a subclass of abstract type DBSerializable! (use DBSerializable.apply(myClass) if obj is an instance of myClass and myClassi implements such methods)")
 
