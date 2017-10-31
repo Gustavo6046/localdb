@@ -59,18 +59,18 @@ class Database
         res = {
             spec: {
                 serialization: null
-                type: null  
+                type: null
                 primitive: false
             }
             obj: null
         }
 
         if isImplementation(obj, DBSerializable)
-            res.obj = obj.toObject()
+            obj = obj.toObject()
             res.spec.type = "DBSerializable"
             res.spec.serialization = obj.constructor.name
 
-        else if typeof obj != 'object'
+        if typeof obj != 'object'
             if (typeof obj) not in ['string', 'number', 'array', 'boolean']
                 throw new Error("#{obj} must be a subclass of abstract type DBSerializable! (use DBSerializable.apply(myClass) if obj is an instance of myClass and myClassi implements such methods)")
 
@@ -87,7 +87,7 @@ class Database
         else
             if not res.spec.type?
                 res.spec.type = "object"
-
+                
             res.obj = {}
 
             for k, v of obj

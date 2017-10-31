@@ -115,10 +115,11 @@ Database = (function() {
       obj: null
     };
     if (isImplementation(obj, DBSerializable)) {
-      res.obj = obj.toObject();
+      obj = obj.toObject();
       res.spec.type = "DBSerializable";
       res.spec.serialization = obj.constructor.name;
-    } else if (typeof obj !== 'object') {
+    }
+    if (typeof obj !== 'object') {
       if ((ref1 = typeof obj) !== 'string' && ref1 !== 'number' && ref1 !== 'array' && ref1 !== 'boolean') {
         throw new Error(obj + " must be a subclass of abstract type DBSerializable! (use DBSerializable.apply(myClass) if obj is an instance of myClass and myClassi implements such methods)");
       } else {
