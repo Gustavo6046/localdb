@@ -39,31 +39,6 @@ DBSerializable = abstractClass(DBSerializable, (cls) ->
 )
 
 # =======================
-# Additional Serializables
-
-class SerializableFunction extends Function
-    toObject: =>
-        m = /function [a-zA-Z0-9\$_]+\(.+?\) {(.+)}/
-            .match('' + @)
-
-        return {
-            name: @name
-            args: @arguments
-            code: m[1]
-        }
-
-    @fromObject = (o) ->
-        ln = o.args
-        ln.push(o.code)
-
-        res = Function.apply(this, ln)
-
-    @fromFunc = (func) ->
-        return Object.create(SerializableFunction, func)
-
-SerializableFunction = DBSerializable.apply(SerializableFunction)
-
-# =======================
 
 class Database
     constructor: (@filename, @serializer) ->
