@@ -55,7 +55,10 @@ class Database
         if (typeof @serializer) is 'function'
             @serializer = new @serializer()
 
-    objectFrom: (obj) =>
+    objectFrom: (obj, parent) =>
+        if not parent? then parent = null
+        a = obj
+
         res = {
             spec: {
                 serialization: null
@@ -72,7 +75,7 @@ class Database
 
         if typeof obj != 'object'
             if (typeof obj) not in ['string', 'number', 'array', 'boolean']
-                throw new Error("#{obj} must be a subclass of abstract type DBSerializable! (use DBSerializable.apply(myClass) if obj is an instance of myClass and myClassi implements such methods)")
+                throw new Error("#{a.replace("\n", "   ")}#{if parent? then " (from key '#{parent}')" else ""} must be a subclass of abstract type DBSerializable! (use DBSerializable.apply(myClass) if obj is an instance of myClass and myClassi implements such methods)")
 
             else
                 res.obj = obj
@@ -87,11 +90,11 @@ class Database
         else
             if not res.spec.type?
                 res.spec.type = "object"
-                
+
             res.obj = {}
 
             for k, v of obj
-                res.obj[k] = @objectFrom(v)
+                res.obj[k] = @objectFrom(v, k)
 
         return res
 
