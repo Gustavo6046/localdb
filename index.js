@@ -128,7 +128,7 @@ Database = (function() {
     }
     if (typeof obj !== 'object') {
       if ((ref1 = typeof obj) !== 'string' && ref1 !== 'number' && ref1 !== 'array' && ref1 !== 'boolean') {
-        throw new Error("" + a + (parent != null ? " (from key '" + pkey + "' and parent '" + parent + "')" : "") + " must be a subclass of abstract type DBSerializable! (use DBSerializable.apply(myClass) if obj is an instance of myClass and myClassi implements such methods)");
+        throw new Error("" + a + (parent != null ? " (from key '" + pkey + "' in parent with keys '" + (Object.keys(parent)) + "')" : "") + " must be a subclass of abstract type DBSerializable! (use DBSerializable.apply(myClass) if obj is an instance of myClass and myClassi implements such methods)");
       } else {
         res.obj = obj;
         res.spec.type = typeof obj;
