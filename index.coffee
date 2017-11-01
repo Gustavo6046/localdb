@@ -75,7 +75,7 @@ class Database
 
         if typeof obj != 'object'
             if (typeof obj) not in ['string', 'number', 'array', 'boolean']
-                throw new Error("#{a.replace("\n", "   ")}#{if parent? then " (from key '#{parent}')" else ""} must be a subclass of abstract type DBSerializable! (use DBSerializable.apply(myClass) if obj is an instance of myClass and myClassi implements such methods)")
+                throw new Error("#{a}#{if parent? then " (from key '#{parent}')" else ""} must be a subclass of abstract type DBSerializable! (use DBSerializable.apply(myClass) if obj is an instance of myClass and myClassi implements such methods)")
 
             else
                 res.obj = obj
