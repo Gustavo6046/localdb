@@ -116,7 +116,7 @@ Database = (function() {
     if (pkey == null) {
       pkey = null;
     }
-    if (this.debug) {
+    if (this.debug === 2) {
       console.log("Attempting to get object from:");
       console.log(obj);
     }
@@ -131,6 +131,9 @@ Database = (function() {
     if (isImplementation(obj, DBSerializable)) {
       res.spec.type = "DBSerializable";
       res.spec.serialization = obj.constructor.name;
+      if (this.debug === 1) {
+        console.log("Found DBSerializable of type " + _serTypes[obj.constructor.name] + (pkey != null ? " (and key '" + pkey + "')" : ''));
+      }
     }
     if (typeof obj !== 'object') {
       if ((ref1 = typeof obj) !== 'string' && ref1 !== 'number' && ref1 !== 'array' && ref1 !== 'boolean') {
@@ -144,11 +147,10 @@ Database = (function() {
       res.obj = obj;
       res.spec.primitive = true;
     } else {
-      if (res.spec.type == null) {
-        res.spec.type = "object";
-      }
       if (isImplementation(obj, DBSerializable)) {
         obj = obj.toObject();
+      } else if (res.spec.type == null) {
+        res.spec.type = "object";
       }
       res.obj = {};
       for (k in obj) {

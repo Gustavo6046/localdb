@@ -61,7 +61,7 @@ class Database
         if not parent? then parent = null
         if not pkey? then pkey = null
 
-        if @debug
+        if @debug == 2
             console.log("Attempting to get object from:")
             console.log(obj)
 
@@ -78,6 +78,9 @@ class Database
             res.spec.type = "DBSerializable"
             res.spec.serialization = obj.constructor.name
 
+            if @debug == 1
+                console.log("Found DBSerializable of type #{_serTypes[obj.constructor.name]}#{if pkey? then " (and key '#{pkey}')" else ''}")
+
         if typeof obj != 'object'
             if (typeof obj) not in ['string', 'number', 'array', 'boolean']
                 throw new Error("#{obj}#{if parent? then " (from key '#{pkey}' in parent with keys '#{Object.keys(parent).join(', ')}')" else ""} must be a subclass of abstract type DBSerializable! (use DBSerializable.apply(myClass) if obj is an instance of myClass and myClassi implements such methods)")
@@ -93,11 +96,11 @@ class Database
             res.spec.primitive = true
 
         else
-            if not res.spec.type?
-                res.spec.type = "object"
-
             if isImplementation(obj, DBSerializable)
                 obj = obj.toObject()
+
+            else if not res.spec.type?
+                res.spec.type = "object"
 
             res.obj = {}
 
