@@ -104,10 +104,13 @@ Database = (function() {
     }
   }
 
-  Database.prototype.objectFrom = function(obj, parent) {
+  Database.prototype.objectFrom = function(obj, pkey, parent) {
     var a, k, ref1, res, v;
     if (parent == null) {
       parent = null;
+    }
+    if (pkey == null) {
+      pkey = null;
     }
     a = obj;
     res = {
@@ -125,7 +128,7 @@ Database = (function() {
     }
     if (typeof obj !== 'object') {
       if ((ref1 = typeof obj) !== 'string' && ref1 !== 'number' && ref1 !== 'array' && ref1 !== 'boolean') {
-        throw new Error("" + a + (parent != null ? " (from key '" + parent + "')" : "") + " must be a subclass of abstract type DBSerializable! (use DBSerializable.apply(myClass) if obj is an instance of myClass and myClassi implements such methods)");
+        throw new Error("" + a + (parent != null ? " (from key '" + pkey + "' and parent '" + parent + "')" : "") + " must be a subclass of abstract type DBSerializable! (use DBSerializable.apply(myClass) if obj is an instance of myClass and myClassi implements such methods)");
       } else {
         res.obj = obj;
         res.spec.type = typeof obj;
@@ -141,7 +144,7 @@ Database = (function() {
       res.obj = {};
       for (k in obj) {
         v = obj[k];
-        res.obj[k] = this.objectFrom(v, k);
+        res.obj[k] = this.objectFrom(v, k, obj);
       }
     }
     return res;

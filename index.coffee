@@ -55,8 +55,9 @@ class Database
         if (typeof @serializer) is 'function'
             @serializer = new @serializer()
 
-    objectFrom: (obj, parent) =>
+    objectFrom: (obj, pkey, parent) =>
         if not parent? then parent = null
+        if not pkey? then pkey = null
         a = obj
 
         res = {
@@ -75,7 +76,7 @@ class Database
 
         if typeof obj != 'object'
             if (typeof obj) not in ['string', 'number', 'array', 'boolean']
-                throw new Error("#{a}#{if parent? then " (from key '#{parent}')" else ""} must be a subclass of abstract type DBSerializable! (use DBSerializable.apply(myClass) if obj is an instance of myClass and myClassi implements such methods)")
+                throw new Error("#{a}#{if parent? then " (from key '#{pkey}' and parent '#{parent}')" else ""} must be a subclass of abstract type DBSerializable! (use DBSerializable.apply(myClass) if obj is an instance of myClass and myClassi implements such methods)")
 
             else
                 res.obj = obj
@@ -94,7 +95,7 @@ class Database
             res.obj = {}
 
             for k, v of obj
-                res.obj[k] = @objectFrom(v, k)
+                res.obj[k] = @objectFrom(v, k, obj)
 
         return res
 
