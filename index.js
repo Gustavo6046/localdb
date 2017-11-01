@@ -105,14 +105,13 @@ Database = (function() {
   }
 
   Database.prototype.objectFrom = function(obj, pkey, parent) {
-    var a, k, ref1, res, v;
+    var k, ref1, res, v;
     if (parent == null) {
       parent = null;
     }
     if (pkey == null) {
       pkey = null;
     }
-    a = obj;
     res = {
       spec: {
         serialization: null,
@@ -122,13 +121,12 @@ Database = (function() {
       obj: null
     };
     if (isImplementation(obj, DBSerializable)) {
-      obj = obj.toObject();
       res.spec.type = "DBSerializable";
       res.spec.serialization = obj.constructor.name;
     }
     if (typeof obj !== 'object') {
       if ((ref1 = typeof obj) !== 'string' && ref1 !== 'number' && ref1 !== 'array' && ref1 !== 'boolean') {
-        throw new Error("" + a + (parent != null ? " (from key '" + pkey + "' in parent with keys '" + (Object.keys(parent)) + "')" : "") + " must be a subclass of abstract type DBSerializable! (use DBSerializable.apply(myClass) if obj is an instance of myClass and myClassi implements such methods)");
+        throw new Error("" + obj + (parent != null ? " (from key '" + pkey + "' in parent with keys '" + (Object.keys(parent).join(', ')) + "')" : "") + " must be a subclass of abstract type DBSerializable! (use DBSerializable.apply(myClass) if obj is an instance of myClass and myClassi implements such methods)");
       } else {
         res.obj = obj;
         res.spec.type = typeof obj;
@@ -140,6 +138,9 @@ Database = (function() {
     } else {
       if (res.spec.type == null) {
         res.spec.type = "object";
+      }
+      if (isImplementation(obj, DBSerializable)) {
+        obj = obj.toObject();
       }
       res.obj = {};
       for (k in obj) {
