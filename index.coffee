@@ -74,7 +74,7 @@ class Database
             obj: null
         }
 
-        if isImplementation(obj, DBSerializable)
+        if isImplementation(obj.constructor, DBSerializable)
             res.spec.type = "DBSerializable"
             res.spec.serialization = obj.constructor.name
 
@@ -96,7 +96,7 @@ class Database
             res.spec.primitive = true
 
         else
-            if isImplementation(obj, DBSerializable)
+            if isImplementation(obj.constructor, DBSerializable)
                 obj = obj.toObject()
 
             else if not res.spec.type?

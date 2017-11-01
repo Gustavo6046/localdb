@@ -128,7 +128,7 @@ Database = (function() {
       },
       obj: null
     };
-    if (isImplementation(obj, DBSerializable)) {
+    if (isImplementation(obj.constructor, DBSerializable)) {
       res.spec.type = "DBSerializable";
       res.spec.serialization = obj.constructor.name;
       if (this.debug === 1) {
@@ -147,7 +147,7 @@ Database = (function() {
       res.obj = obj;
       res.spec.primitive = true;
     } else {
-      if (isImplementation(obj, DBSerializable)) {
+      if (isImplementation(obj.constructor, DBSerializable)) {
         obj = obj.toObject();
       } else if (res.spec.type == null) {
         res.spec.type = "object";
