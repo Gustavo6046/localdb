@@ -7,8 +7,8 @@ class DatabaseSerializer
     F_deserialize: null
 
 DatabaseSerializer = abstractClass(DatabaseSerializer, (cls) ->
-    cls.database = (filename) ->
-        return new Database(filename, cls)
+    cls.database = (filename, debug) ->
+        return new Database(filename, cls, debug)
 )
 
 class YAMLSerializer
@@ -41,7 +41,9 @@ DBSerializable = abstractClass(DBSerializable, (cls) ->
 # =======================
 
 class Database
-    constructor: (@filename, @serializer) ->
+    constructor: (@filename, @serializer, @debug) ->
+        if not @debug? then @debug = false
+
         try
             if fs.statSync(@filename).isFile()
                 @data = @serializer.deserialize(fs.readFileSync(@filename))
@@ -58,6 +60,10 @@ class Database
     objectFrom: (obj, pkey, parent) =>
         if not parent? then parent = null
         if not pkey? then pkey = null
+
+        if @debug
+            console.log("Attempting to get object from:")
+            console.log(obj)
 
         res = {
             spec: {

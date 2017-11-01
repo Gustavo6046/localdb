@@ -20,8 +20,8 @@ DatabaseSerializer = (function() {
 })();
 
 DatabaseSerializer = abstractClass(DatabaseSerializer, function(cls) {
-  return cls.database = function(filename) {
-    return new Database(filename, cls);
+  return cls.database = function(filename, debug) {
+    return new Database(filename, cls, debug);
   };
 });
 
@@ -76,10 +76,11 @@ DBSerializable = abstractClass(DBSerializable, function(cls) {
 });
 
 Database = (function() {
-  function Database(filename1, serializer) {
+  function Database(filename1, serializer, debug1) {
     var err;
     this.filename = filename1;
     this.serializer = serializer;
+    this.debug = debug1;
     this.append = bind(this.append, this);
     this.get = bind(this.get, this);
     this.put = bind(this.put, this);
@@ -89,6 +90,9 @@ Database = (function() {
     this._loadFile = bind(this._loadFile, this);
     this.unfreeze = bind(this.unfreeze, this);
     this.objectFrom = bind(this.objectFrom, this);
+    if (this.debug == null) {
+      this.debug = false;
+    }
     try {
       if (fs.statSync(this.filename).isFile()) {
         this.data = this.serializer.deserialize(fs.readFileSync(this.filename));
@@ -111,6 +115,10 @@ Database = (function() {
     }
     if (pkey == null) {
       pkey = null;
+    }
+    if (this.debug) {
+      console.log("Attempting to get object from:");
+      console.log(obj);
     }
     res = {
       spec: {
