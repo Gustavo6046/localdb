@@ -21,10 +21,10 @@ abstractClass = (cls, onApply) ->
             missingFuncs = []
 
             if otherClass.__implements__?
-                otherClass.__implements__ = [cls]
+                otherClass.__implements__.push(cls)
             
             else
-                otherClass.__implements__.push(cls)
+                otherClass.__implements__ = [cls]
 
             for k, v of cls
                 if v instanceof AbstractFunction and (

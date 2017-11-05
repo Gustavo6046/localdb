@@ -84,9 +84,9 @@ abstractClass = function(cls, onApply) {
       var k, missingFuncs, v;
       missingFuncs = [];
       if (otherClass.__implements__ != null) {
-        otherClass.__implements__ = [cls];
-      } else {
         otherClass.__implements__.push(cls);
+      } else {
+        otherClass.__implements__ = [cls];
       }
       for (k in cls) {
         v = cls[k];
