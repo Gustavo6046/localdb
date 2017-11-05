@@ -83,6 +83,11 @@ abstractClass = function(cls, onApply) {
     AbstractedClass.apply = function(otherClass) {
       var k, missingFuncs, v;
       missingFuncs = [];
+      if (otherClass.__implements__ != null) {
+        otherClass.__implements__ = [cls];
+      } else {
+        otherClass.__implements__.push(cls);
+      }
       for (k in cls) {
         v = cls[k];
         if (v instanceof AbstractFunction && (!v.check(otherClass))) {
@@ -131,7 +136,7 @@ abstractClass = function(cls, onApply) {
 };
 
 isImplementation = function(ins, cls) {
-  return (ins.constructor.__absInheritance__ != null) && indexOf.call(ins.constructor.__absInheritance__, cls) >= 0;
+  return (ins.constructor.__implements__ != null) && indexOf.call(ins.constructor.__implements__, cls) >= 0;
 };
 
 module.exports = {
