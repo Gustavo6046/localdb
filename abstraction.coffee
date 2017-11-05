@@ -12,6 +12,8 @@ class AbstractionError extends Error
 class AbstractClassError extends AbstractionError
 class BadInheritanceError extends AbstractionError
 
+absID = 0
+
 abstractClass = (cls, onApply) ->
     class AbstractedClass extends cls
         constructor: ->
@@ -61,6 +63,8 @@ abstractClass = (cls, onApply) ->
                 AbstractedClass[k.slice(2)] = new AbstractStaticFunction(k.slice(2))
                 delete AbstractedClass[k]
 
+    cls.__absID__ = absID++
+
     if cls.__absInheritance__?
         AbstractedClass.__absInheritance__ = cls.__absInheritance__
         AbstractedClass.__absInheritance__.push(cls)
@@ -73,7 +77,7 @@ abstractClass = (cls, onApply) ->
     return AbstractedClass
 
 isImplementation = (ins, cls) ->
-    return ins.constructor.__implements__? and cls in ins.constructor.__implements__
+    return ins.constructor.__implements__? and cls.__absID__ in ins.constructor.__implements__.map((x) -> x.__absID__)
 
 module.exports = {
     abstractClass: abstractClass
