@@ -127,7 +127,7 @@ abstractClass = function(cls, onApply) {
       }
     }
   }
-  cls.__absID__ = absID++;
+  AbstractedClass.__absID__ = absID++;
   if (cls.__absInheritance__ != null) {
     AbstractedClass.__absInheritance__ = cls.__absInheritance__;
     AbstractedClass.__absInheritance__.push(cls);

@@ -81,9 +81,14 @@ class Database
             if @debug == 1
                 console.log("Found DBSerializable of type #{_serTypes[obj.constructor.name]}#{if pkey? then " (and key '#{pkey}')" else ''}")
 
-        if typeof obj != 'object'
+            res.obj = {}
+
+            for k, v of obj.toObject()
+                res.obj[k] = @objectFrom(v, k, obj)
+
+        else if typeof obj != 'object'
             if (typeof obj) not in ['string', 'number', 'array', 'boolean']
-                throw new Error("#{obj}#{if parent? then " (from key '#{pkey}' in parent with keys '#{Object.keys(parent).join(', ')}')" else ""} must be a subclass of abstract type DBSerializable! (use DBSerializable.apply(myClass) if obj is an instance of myClass and myClassi implements such methods)")
+                throw new Error("#{obj}#{if parent? then " (from key '#{pkey}' in parent with keys '#{Object.keys(parent).join(', ')}')" else ""} must implement the abstract type DBSerializable! (use DBSerializable.apply(myClass) if obj is an instance of myClass and myClass implements such methods)")
 
             else
                 res.obj = obj
@@ -92,14 +97,11 @@ class Database
                 res.spec.primitive = true
 
         else if obj == null # includes undefined
-            res.obj = obj
+            res.obj = null
             res.spec.primitive = true
 
         else
-            if isImplementation(obj.constructor, DBSerializable)
-                obj = obj.toObject()
-
-            else if not res.spec.type?
+            if not res.spec.type?
                 res.spec.type = "object"
 
             res.obj = {}
@@ -113,11 +115,17 @@ class Database
         res = null
 
         if d.spec.type is "DBSerializable"
-            if d.spec.serialization?
-                d.obj = _serTypes[d.spec.serialization].fromObject(d.obj)
+            if d.spec.serialization? and d.spec.serialization in _serTypes
+                o = _serTypes[d.spec.serialization].fromObject(d.obj)
+
+            else if d.spec.serialization not in _serTypes
+                throw new Error("DBSerializable-based object '#{d.obj}' specifies an unsupported serialization type! (try loading the module with the serialization)")
 
             else
                 throw new Error("DBSerializable-based object '#{d.obj}' does not specify the serializing class in its spec structure")
+
+            for k, v of o
+                res[k] = @unfreeze(v)
 
         else if d.spec.primitive
             res = d.obj

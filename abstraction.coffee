@@ -63,7 +63,7 @@ abstractClass = (cls, onApply) ->
                 AbstractedClass[k.slice(2)] = new AbstractStaticFunction(k.slice(2))
                 delete AbstractedClass[k]
 
-    cls.__absID__ = absID++
+    AbstractedClass.__absID__ = absID++
 
     if cls.__absInheritance__?
         AbstractedClass.__absInheritance__ = cls.__absInheritance__
