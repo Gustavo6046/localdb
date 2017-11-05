@@ -166,34 +166,47 @@ Database = (function() {
   };
 
   Database.prototype.unfreeze = function(d) {
-    var k, o, ref1, ref2, ref3, res, v;
-    res = null;
-    if (d.spec.type === "DBSerializable") {
-      if ((d.spec.serialization != null) && (ref1 = d.spec.serialization, indexOf.call(_serTypes, ref1) >= 0)) {
-        o = _serTypes[d.spec.serialization].fromObject(d.obj);
-      } else if (ref2 = d.spec.serialization, indexOf.call(_serTypes, ref2) < 0) {
-        throw new Error("DBSerializable-based object '" + d.obj + "' specifies an unsupported serialization type! (try loading the module with the serialization)");
+    var e, k, o, ref1, ref2, ref3, res, v;
+    try {
+      res = null;
+      if (d.spec.type === "DBSerializable") {
+        if ((d.spec.serialization != null) && (ref1 = d.spec.serialization, indexOf.call(Object.keys(_serTypes), ref1) >= 0)) {
+          res = _serTypes[d.spec.serialization].fromObject(d.obj);
+        } else if (ref2 = d.spec.serialization, indexOf.call(Object.keys(_serTypes), ref2) < 0) {
+          throw new Error("DBSerializable-based object '" + d.obj + "' specifies an unsupported serialization type '" + d.spec.serialization + "'! (try loading the module with the serialization)");
+        } else {
+          throw new Error("DBSerializable-based object '" + d.obj + "' does not specify the serializing class in its spec structure");
+        }
+      } else if (d.spec.primitive) {
+        res = d.obj;
+      } else if (d.spec.type === "object") {
+        o = {};
+        ref3 = d.obj;
+        for (k in ref3) {
+          v = ref3[k];
+          o[k] = this.unfreeze(v);
+        }
+        res = o;
       } else {
-        throw new Error("DBSerializable-based object '" + d.obj + "' does not specify the serializing class in its spec structure");
+        throw new Error("Object '" + d.obj + "' does not specify a supported spec structure type ('" + d.spec.type + "' is a currently unsupported format)");
       }
-      for (k in o) {
-        v = o[k];
-        res[k] = this.unfreeze(v);
+      return res;
+    } catch (error) {
+      e = error;
+      if (d.spec != null) {
+        if (!d.spec.primitive) {
+          console.log("Error unfreezing object with keys '" + (Object.keys(d.obj).join(', ')) + "' and spec..");
+          console.log(d.spec);
+        } else {
+          console.log("Error unfreezing object '" + d.obj + "' with spec...");
+          console.log(d.spec);
+        }
+      } else {
+        console.log("Error unfreezing object...");
+        console.log(d);
       }
-    } else if (d.spec.primitive) {
-      res = d.obj;
-    } else if (d.spec.type === "object") {
-      o = {};
-      ref3 = d.obj;
-      for (k in ref3) {
-        v = ref3[k];
-        o[k] = this.unfreeze(v);
-      }
-      res = o;
-    } else {
-      throw new Error("Object '" + d.obj + "' does not specify a supported spec structure type ('" + d.spec.type + "' is a currently unsupported format)");
+      throw e;
     }
-    return res;
   };
 
   Database.prototype._loadFile = function() {

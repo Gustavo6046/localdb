@@ -112,36 +112,50 @@ class Database
         return res
 
     unfreeze: (d) =>
-        res = null
+        try
+            res = null
 
-        if d.spec.type is "DBSerializable"
-            if d.spec.serialization? and d.spec.serialization in _serTypes
-                o = _serTypes[d.spec.serialization].fromObject(d.obj)
+            if d.spec.type is "DBSerializable"
+                if d.spec.serialization? and d.spec.serialization in Object.keys(_serTypes)
+                    res = _serTypes[d.spec.serialization].fromObject(d.obj)
 
-            else if d.spec.serialization not in _serTypes
-                throw new Error("DBSerializable-based object '#{d.obj}' specifies an unsupported serialization type! (try loading the module with the serialization)")
+                else if d.spec.serialization not in Object.keys(_serTypes)
+                    throw new Error("DBSerializable-based object '#{d.obj}' specifies an unsupported serialization type '#{d.spec.serialization}'! (try loading the module with the serialization)")
+
+                else
+                    throw new Error("DBSerializable-based object '#{d.obj}' does not specify the serializing class in its spec structure")
+
+            else if d.spec.primitive
+                res = d.obj
+
+            else if d.spec.type is "object"
+                o = {}
+
+                for k, v of d.obj
+                    o[k] = @unfreeze(v)
+
+                res = o
 
             else
-                throw new Error("DBSerializable-based object '#{d.obj}' does not specify the serializing class in its spec structure")
+                throw new Error("Object '#{d.obj}' does not specify a supported spec structure type ('#{d.spec.type}' is a currently unsupported format)")
 
-            for k, v of o
-                res[k] = @unfreeze(v)
+            return res
 
-        else if d.spec.primitive
-            res = d.obj
+        catch e
+            if d.spec? 
+                if not d.spec.primitive
+                    console.log("Error unfreezing object with keys '#{Object.keys(d.obj).join(', ')}' and spec..")
+                    console.log(d.spec)
 
-        else if d.spec.type is "object"
-            o = {}
+                else
+                    console.log("Error unfreezing object '#{d.obj}' with spec...")
+                    console.log(d.spec)
 
-            for k, v of d.obj
-                o[k] = @unfreeze(v)
+            else
+                console.log("Error unfreezing object...")
+                console.log(d)
 
-            res = o
-
-        else
-            throw new Error("Object '#{d.obj}' does not specify a supported spec structure type ('#{d.spec.type}' is a currently unsupported format)")
-
-        return res
+            throw e
 
     _loadFile: =>
         try
@@ -149,7 +163,7 @@ class Database
                 throw new Error("If you are seeing this, something is wrong with this control block.")
 
         catch err
-            return @data || {}
+            return @data or {}
 
         data = @serializer.deserialize(fs.readFileSync(@filename))
 
