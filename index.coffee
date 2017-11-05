@@ -21,7 +21,7 @@ class YAMLSerializer
 
 class JSONSerializer
     serialize: JSON.stringify
-    deserialize = JSON.parse
+    deserialize: JSON.parse
 
 YAMLSerializer = DatabaseSerializer.apply(YAMLSerializer)
 JSONSerializer = DatabaseSerializer.apply(JSONSerializer)

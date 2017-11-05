@@ -43,13 +43,11 @@ YAMLSerializer = (function() {
 })();
 
 JSONSerializer = (function() {
-  var deserialize;
-
   function JSONSerializer() {}
 
   JSONSerializer.prototype.serialize = JSON.stringify;
 
-  deserialize = JSON.parse;
+  JSONSerializer.prototype.deserialize = JSON.parse;
 
   return JSONSerializer;
 
