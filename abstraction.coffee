@@ -22,12 +22,6 @@ abstractClass = (cls, onApply) ->
         @apply: (otherClass) ->
             missingFuncs = []
 
-            if otherClass.__implements__?
-                otherClass.__implements__.push(cls)
-            
-            else
-                otherClass.__implements__ = [cls]
-
             for k, v of cls
                 if v instanceof AbstractFunction and (
                     !v.check(otherClass)
@@ -48,6 +42,8 @@ abstractClass = (cls, onApply) ->
 
             if onApply?
                 onApply(otherClass)
+
+            otherClass.__implements__ = @__absID__
 
             return otherClass
 
@@ -77,7 +73,7 @@ abstractClass = (cls, onApply) ->
     return AbstractedClass
 
 isImplementation = (ins, cls) ->
-    return ins.constructor.__implements__? and cls.__absID__ in ins.constructor.__implements__.map((x) -> x.__absID__)
+    return ins.__implements__ == cls.__absID__
 
 module.exports = {
     abstractClass: abstractClass
