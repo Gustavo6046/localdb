@@ -47,7 +47,7 @@ JSONSerializer = (function() {
 
   function JSONSerializer() {}
 
-  JSONSerializer.prototype.serialize = JSON.parse;
+  JSONSerializer.prototype.serialize = JSON.stringify;
 
   deserialize = JSON.parse;
 
