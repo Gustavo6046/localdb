@@ -110,7 +110,7 @@ Database = (function() {
   }
 
   Database.prototype.objectFrom = function(obj, pkey, parent) {
-    var k, ref1, ref2, res, v;
+    var arr, i, k, len, o, ref1, ref2, res, v;
     if (parent == null) {
       parent = null;
     }
@@ -129,11 +129,11 @@ Database = (function() {
       },
       obj: null
     };
-    if (isImplementation(obj.constructor, DBSerializable)) {
+    if ((obj != null) && isImplementation(obj.constructor, DBSerializable)) {
       res.spec.type = "DBSerializable";
       res.spec.serialization = obj.constructor.name;
       if (this.debug === 1) {
-        console.log("Found DBSerializable of type " + _serTypes[obj.constructor.name] + (pkey != null ? " (and key '" + pkey + "')" : ''));
+        console.log("Found DBSerializable of type " + obj.constructor.name + (pkey != null ? " (and key '" + pkey + "')" : ''));
       }
       res.obj = {};
       ref1 = obj.toObject();
@@ -141,14 +141,23 @@ Database = (function() {
         v = ref1[k];
         res.obj[k] = this.objectFrom(v, k, obj);
       }
-    } else if (typeof obj !== 'object') {
-      if ((ref2 = typeof obj) !== 'string' && ref2 !== 'number' && ref2 !== 'array' && ref2 !== 'boolean') {
-        throw new Error("" + obj + (parent != null ? " (from key '" + pkey + "' in parent with keys '" + (Object.keys(parent).join(', ')) + "')" : "") + " must implement the abstract type DBSerializable! (use DBSerializable.apply(myClass) if obj is an instance of myClass and myClass implements such methods)");
+    } else if ((typeof obj) !== 'object') {
+      if ((ref2 = typeof obj) !== 'string' && ref2 !== 'number' && ref2 !== 'boolean') {
+        throw new Error("" + obj + (parent != null ? " (from key '" + pkey + "' in parent with keys '" + (Object.keys(parent).join(', ')) + "')" : "") + " must be a primitive, non-instance object, array, or implement the abstract type DBSerializable!");
       } else {
         res.obj = obj;
         res.spec.type = typeof obj;
         res.spec.primitive = true;
       }
+    } else if (Array.isArray(obj)) {
+      arr = [];
+      for (i = 0, len = obj.length; i < len; i++) {
+        o = obj[i];
+        arr.push(this.objectFrom(o));
+      }
+      res.obj = arr;
+      res.spec.type = 'array';
+      res.spec.primitive = false;
     } else if (obj === null) {
       res.obj = null;
       res.spec.primitive = true;
@@ -166,27 +175,39 @@ Database = (function() {
   };
 
   Database.prototype.unfreeze = function(d) {
-    var e, k, o, ref1, ref2, ref3, res, v;
+    var e, i, item, k, len, ref1, ref2, ref3, ref4, ref5, res, ud, v;
     try {
       res = null;
       if (d.spec.type === "DBSerializable") {
-        if ((d.spec.serialization != null) && (ref1 = d.spec.serialization, indexOf.call(Object.keys(_serTypes), ref1) >= 0)) {
-          res = _serTypes[d.spec.serialization].fromObject(d.obj);
-        } else if (ref2 = d.spec.serialization, indexOf.call(Object.keys(_serTypes), ref2) < 0) {
+        ud = {};
+        ref1 = d.obj;
+        for (k in ref1) {
+          v = ref1[k];
+          ud[k] = this.unfreeze(v);
+        }
+        if ((d.spec.serialization != null) && (ref2 = d.spec.serialization, indexOf.call(Object.keys(_serTypes), ref2) >= 0)) {
+          res = _serTypes[d.spec.serialization].fromObject(ud);
+        } else if (ref3 = d.spec.serialization, indexOf.call(Object.keys(_serTypes), ref3) < 0) {
           throw new Error("DBSerializable-based object '" + d.obj + "' specifies an unsupported serialization type '" + d.spec.serialization + "'! (try loading the module with the serialization)");
         } else {
           throw new Error("DBSerializable-based object '" + d.obj + "' does not specify the serializing class in its spec structure");
         }
       } else if (d.spec.primitive) {
         res = d.obj;
-      } else if (d.spec.type === "object") {
-        o = {};
-        ref3 = d.obj;
-        for (k in ref3) {
-          v = ref3[k];
-          o[k] = this.unfreeze(v);
+      } else if (d.spec.type === "array") {
+        res = [];
+        ref4 = d.obj;
+        for (i = 0, len = ref4.length; i < len; i++) {
+          item = ref4[i];
+          res.push(this.unfreeze(item));
         }
-        res = o;
+      } else if (d.spec.type === "object") {
+        res = {};
+        ref5 = d.obj;
+        for (k in ref5) {
+          v = ref5[k];
+          res[k] = this.unfreeze(v);
+        }
       } else {
         throw new Error("Object '" + d.obj + "' does not specify a supported spec structure type ('" + d.spec.type + "' is a currently unsupported format)");
       }
