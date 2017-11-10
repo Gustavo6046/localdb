@@ -86,6 +86,11 @@ class Database
             for k, v of obj.toObject()
                 res.obj[k] = @objectFrom(v, k, obj)
                 
+        else if not obj?
+            res.spec.type = "nil"
+            res.spec.primitive = true
+            res.obj = obj
+
         else if (typeof obj) isnt 'object'
             if (typeof obj) not in ['string', 'number', 'boolean']
                 throw new Error("#{obj}#{if parent? then " (from key '#{pkey}' in parent with keys '#{Object.keys(parent).join(', ')}')" else ""} must be a primitive, non-instance object, array, or implement the abstract type DBSerializable!")
