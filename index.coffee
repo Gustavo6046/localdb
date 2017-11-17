@@ -1,5 +1,6 @@
 fs = require('fs')
 YAML = require('js-yaml')
+BSON = new (require('bson'))()
 { abstractClass, isImplementation } = require('./abstraction.js')
 
 class DatabaseSerializer
@@ -11,20 +12,24 @@ DatabaseSerializer = abstractClass(DatabaseSerializer, (cls) ->
         return new Database(filename, cls, debug)
 )
 
-class YAMLSerializer
-    serialize: (o) -> YAML.safeDump(o, {
-        indent: 4
-        lineWidth: 175
-        
-    })
-    deserialize: YAML.safeLoad
-
 class JSONSerializer
     serialize: JSON.stringify
     deserialize: JSON.parse
 
-YAMLSerializer = DatabaseSerializer.apply(YAMLSerializer)
+class YAMLSerializer
+    serialize: (o) -> YAML.safeDump(o, {
+        indent: 4
+        lineWidth: 175
+    })
+    deserialize: YAML.safeLoad
+
+class BSONSerializer
+    serialize: BSON.serialize
+    deserialize: BSON.deserialize
+
 JSONSerializer = DatabaseSerializer.apply(JSONSerializer)
+YAMLSerializer = DatabaseSerializer.apply(YAMLSerializer)
+BSONSerializer = DatabaseSerializer.apply(BSONSerializer)
 
 # =======================
 
@@ -276,6 +281,7 @@ module.exports = {
 
     JSONSerializer: JSONSerializer
     YAMLSerializer: YAMLSerializer
+    BSONSerializer: BSONSerializer
 
     # entry point inheritance
     abstractClass: abstractClass

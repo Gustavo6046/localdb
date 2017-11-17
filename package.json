@@ -1,6 +1,6 @@
 {
   "name": "shelfdb",
-  "version": "0.4.11",
+  "version": "0.5.0",
   "description": "Node.JS custom database and abstract class library",
   "main": "index.js",
   "scripts": {
@@ -26,5 +26,8 @@
   "bugs": {
     "url": "https://github.com/Gustavo6046/localdb/issues"
   },
-  "homepage": "https://github.com/Gustavo6046/localdb#readme"
+  "homepage": "https://github.com/Gustavo6046/localdb#readme",
+  "dependencies": {
+    "bson": "^1.0.4"
+  }
 }
