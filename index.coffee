@@ -1,6 +1,7 @@
 fs = require('fs')
 YAML = require('js-yaml')
 BSON = new (require('bson'))()
+GZIP = require('pako')
 { abstractClass, isImplementation } = require('./abstraction.js')
 
 class DatabaseSerializer
@@ -30,6 +31,19 @@ class BSONSerializer
 JSONSerializer = DatabaseSerializer.apply(JSONSerializer)
 YAMLSerializer = DatabaseSerializer.apply(YAMLSerializer)
 BSONSerializer = DatabaseSerializer.apply(BSONSerializer)
+
+gzipped = (ser) ->
+    class GZipped
+        serialize: (o) ->
+            new Buffer(GZIP.deflate(ser.prototype.serialize(o)))
+
+        deserialize: (o) ->
+            ser.prototype.deserialize(new Buffer(GZIP.inflate(o)))
+
+    GZipped.name += ser.name
+    GZipped = DatabaseSerializer.apply(GZipped)
+
+    return GZipped
 
 # =======================
 
@@ -282,6 +296,8 @@ module.exports = {
     JSONSerializer: JSONSerializer
     YAMLSerializer: YAMLSerializer
     BSONSerializer: BSONSerializer
+
+    gzipped: gzipped
 
     # entry point inheritance
     abstractClass: abstractClass
