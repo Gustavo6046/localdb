@@ -46,13 +46,18 @@ gzipped = (ser) ->  # for compatibility purposes
 
     return GZipped
 
-compressed = (ser, compression) ->
+compressions = {
+    gzip: ['gzipSync', 'gunzipSync']
+    inflate: ['deflateSync', 'inflateSync']
+}
+
+zlib = (ser, compression) ->
     class GZipped
         serialize: (o) ->
-            new Buffer(zlib.deflate(ser.prototype.serialize(o), compression))
+            new Buffer(zlib[compressions[compression][0]](ser.prototype.serialize(o)))
 
         deserialize: (o) ->
-            ser.prototype.deserialize(new Buffer(zlib.inflate(o, compression)))
+            ser.prototype.deserialize(new Buffer(zlib[compressions[compression][1]](o)))
 
     GZipped.name += ser.name
     GZipped = DatabaseSerializer.apply(GZipped)
