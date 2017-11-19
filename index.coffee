@@ -2,6 +2,7 @@ fs = require('fs')
 YAML = require('js-yaml')
 BSON = new (require('bson'))()
 GZIP = require('pako')
+zlib = require('zlib')
 { abstractClass, isImplementation } = require('./abstraction.js')
 
 class DatabaseSerializer
@@ -32,13 +33,26 @@ JSONSerializer = DatabaseSerializer.apply(JSONSerializer)
 YAMLSerializer = DatabaseSerializer.apply(YAMLSerializer)
 BSONSerializer = DatabaseSerializer.apply(BSONSerializer)
 
-gzipped = (ser) ->
+gzipped = (ser) ->  # for compatibility purposes
     class GZipped
         serialize: (o) ->
             new Buffer(GZIP.deflate(ser.prototype.serialize(o)))
 
         deserialize: (o) ->
             ser.prototype.deserialize(new Buffer(GZIP.inflate(o)))
+
+    GZipped.name += ser.name
+    GZipped = DatabaseSerializer.apply(GZipped)
+
+    return GZipped
+
+compressed = (ser, compression) ->
+    class GZipped
+        serialize: (o) ->
+            new Buffer(zlib.deflate(ser.prototype.serialize(o), compression))
+
+        deserialize: (o) ->
+            ser.prototype.deserialize(new Buffer(zlib.inflate(o, compression)))
 
     GZipped.name += ser.name
     GZipped = DatabaseSerializer.apply(GZipped)
