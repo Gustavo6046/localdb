@@ -4,6 +4,7 @@ BSON = new (require('bson'))()
 GZIP = require('pako')
 zlib = require('zlib')
 { abstractClass, isImplementation } = require('./abstraction.js')
+compjs = require('compressjs')
 
 class DatabaseSerializer
     F_serialize: null
@@ -47,22 +48,29 @@ gzipped = (ser) ->  # for compatibility purposes
     return GZipped
 
 compressions = {
-    gzip: ['gzipSync', 'gunzipSync']
-    inflate: ['deflateSync', 'inflateSync']
+    gzip: [zlib.gzipSync, zlib.gunzipSync]
+    inflate: [zlib.deflateSync, zlib.inflateSync]
+    bzip2: [compjs.Bzip2.compressFile, compjs.Bzip2.decompressFile]
+    bwtc: [compjs.BWTC.compressFile, compjs.BWTC.decompressFile]
+    lzp3: [compjs.Lzp3.compressFile, compjs.Lzp3.decompressFile]
+    ppm: [compjs.PPM.compressFile, compjs.PPM.decompressFile]
 }
 
-zlib = (ser, compression) ->
-    class GZipped
+compressed = (ser, compression) ->
+    if not compressions[compression = compression.toLowerCase()]?
+        throw new Error("No such compression currently available with shelfdb!")
+
+    class Compressed
         serialize: (o) ->
-            new Buffer(zlib[compressions[compression][0]](ser.prototype.serialize(o)))
+            new Buffer(compressions[compression][0](new Buffer(ser.prototype.serialize(o))))
 
         deserialize: (o) ->
-            ser.prototype.deserialize(new Buffer(zlib[compressions[compression][1]](o)))
+            ser.prototype.deserialize(new Buffer(compressions[compression][1](o)))
 
-    GZipped.name += ser.name
-    GZipped = DatabaseSerializer.apply(GZipped)
+    Compressed.name += ser.name
+    Compressed = DatabaseSerializer.apply(Compressed)
 
-    return GZipped
+    return Compressed
 
 # =======================
 
@@ -317,6 +325,8 @@ module.exports = {
     BSONSerializer: BSONSerializer
 
     gzipped: gzipped
+    compressed: compressed
+    compressions: compressions
 
     # entry point inheritance
     abstractClass: abstractClass
